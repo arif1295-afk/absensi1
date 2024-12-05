@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">ShiftKu</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_bottomnavbar">bottomnavbar</string>
+    <string name="title_activity_main11">MainActivity11</string>
+
+    <!-- Add the following string resources -->
+    <string name="absensi">Absensi</string>
+    <string name="jadwal">Jadwal</string>
+    <string name="lembur">Lembur</string>
+    <string name="gaji">Gaji</string>
+    <string name="izin">Izin</string>
+    <string name="profile">Profile</string>
+
+    <string-array name="bagian_array">
+        <item>HR</item>
+        <item>Supervisor</item>
+        <item>Operator Jahit</item>
+        <item>Quality Control</item>
+        <item>Packing</item>
+        <item>Admin</item>
+        <item>Sales Garment</item>
+    </string-array>
+</resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".loginpage1"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aplikasi ShiftKu "
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:layout_marginTop="100dp"
+            android:layout_marginLeft="30dp"/>
+
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="115dp"
+            android:text="Silahkan Login menggunakan\nAkun yang sudah terdaftar"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_marginLeft="30dp"  />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="170sp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30dp"
+            android:background="@color/cdLog"
+            app:cardCornerRadius="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/etloginname1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="30dp"
+                    android:hint="Username"
+                    android:singleLine="true"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp">
+
+                    <EditText
+                        android:id="@+id/etloginpw1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Password"
+                        android:singleLine="true"/>
+
+                    <Button
+                        android:id="@+id/eyebutton"
+                        android:layout_width="50dp"
+                        android:background="@color/zxing_transparent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+                        android:drawableEnd="@drawable/baseline_face_retouching_off_24"
+                        android:contentDescription="Toggle Password Visibility" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnLogin1"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/btnLog"
+            android:text="Login"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

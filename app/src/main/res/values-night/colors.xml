@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg">#174C50</color>
+    <color name="cdLog">#E0E0E0</color>
+    <color name="btnLog">#0D7377</color>
+    <color name="bgdb">#DBD8D8</color>
+    <color name="cdatas">#4298C8</color>
+    <color name="cvks1">#3E2723</color>
+    <color name="cvks2">#1B5E20</color>
+    <color name="cvks3">#616161</color>
+    <color name="cvks4">#1565C0</color>
+    <color name="cvks5">#F9A825</color>
+    <color name="cvks6">#6A1B9A</color>
+    <color name="cvks7">#B71C1C</color>
+    <color name="bgbiruijo">#092C2E</color>
+    <color name="carinama">#E0E0E0</color>
+    <color name="tcarinama">#ff000000</color>
+</resources>

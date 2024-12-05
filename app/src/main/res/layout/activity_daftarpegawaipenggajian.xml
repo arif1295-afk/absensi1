@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".daftarpegawaipenggajian"
+    android:background="@color/bgbiruijo"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daftar Pegawai"
+        android:textSize="24sp"
+        android:layout_gravity="center"/>
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cari Nama Pegawai"
+        android:padding="8dp"
+        android:textSize="17sp"
+        android:inputType="text"
+        android:textColorHint="@color/tcarinama"
+        android:background="@color/carinama"
+        android:layout_marginTop="10dp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:descendantFocusability="blocksDescendants"
+        android:id="@+id/employeesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        />
+
+    <!-- This will hold the list of usernames and job titles -->
+    <LinearLayout
+        android:id="@+id/employeesLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
+
+</LinearLayout>
