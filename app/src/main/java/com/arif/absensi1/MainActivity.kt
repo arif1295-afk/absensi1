@@ -22,7 +22,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     private lateinit var qrCodeImageView: ImageView
     private val handler = Handler()
-    private val updateInterval: Long = 5000 // 5 seconds
+    private val updateInterval: Long = 10000 // 5 seconds
     private var currentQRCodeData: String? = null // Track current QR code data
     private lateinit var database: DatabaseReference // Firebase database reference
 
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                         .addOnFailureListener { exception ->
                             Log.e("FirebaseDelete", "Error deleting QR code data: ${exception.message}")
                         }
-                }, 5000) // 5000 milliseconds = 5 seconds
+                }, 10000) // 10000 milliseconds = 10 seconds
 
             }
             .addOnFailureListener { exception ->

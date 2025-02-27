@@ -19,7 +19,7 @@ class daftarpegawaipenggajian : AppCompatActivity() {
         val id: String,
         var username: String,
         var bagian: String,
-        var password: String
+        var password: String,
     )
 
     private lateinit var database: DatabaseReference

@@ -49,6 +49,7 @@ class Registerpage1 : AppCompatActivity() {
 
             val database = FirebaseDatabase.getInstance("https://penggajian-b318f-default-rtdb.asia-southeast1.firebasedatabase.app/")
             val userRef = database.getReference("users")
+            val gajianBagianRef = database.getReference("gajiBagian")
 
             // Check if username is already taken
             userRef.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -64,7 +65,7 @@ class Registerpage1 : AppCompatActivity() {
                             "role" to "user", // Automatically assigning role here
                             "bagian" to bagian // Add the selected bagian to the database
                         )
-                        newUser.setValue(user).addOnCompleteListener {
+                        newUser.setValue(user).addOnCompleteListener { task ->
                             Toast.makeText(this@Registerpage1, "Berhasil Menambahkan Data", Toast.LENGTH_SHORT).show()
                             finish() // Close the registration activity
                         }.addOnFailureListener {

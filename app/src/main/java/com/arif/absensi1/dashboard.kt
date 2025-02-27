@@ -278,99 +278,93 @@ class dashboard : AppCompatActivity() {
     data class SalaryData(val salary: Long, val pph21: Long, val bpjsKesehatan: Long, val netIncome: Long, val latenessFine: Long)
 
     private fun fetchAttendanceData(userId: String, month: String, callback: (SalaryData) -> Unit) {
-        val ref = database.child("users").child(userId).child("datatabel").child(month)
+        val userRef = database.child("users").child(userId)
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var totalDays = 0
-                var totalLateness: Long = 0
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(userSnapshot: DataSnapshot) {
+                val bagian = userSnapshot.child("bagian").getValue(String::class.java) ?: "Unknown"
 
-                // Loop through all the days for the selected month
-                for (day in snapshot.children) {
-                    val attendanceData = day.child("attendance").value as? Map<*, *>
-                    if (attendanceData != null) {
-                        val attendance1 = attendanceData["attendance1"] as? Map<*, *>
-                        val scan1DoneAttendance1 = attendance1?.get("scan1_done") as? Boolean ?: false
-                        val scanTime1 = attendance1?.get("scanTime") as? String ?: ""
+                val gajiBagianRef = database.child("gajiBagian").child(bagian)
+                gajiBagianRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(gajiSnapshot: DataSnapshot) {
+                        val dailySalary = gajiSnapshot.getValue(Long::class.java) ?: 100000L // Default salary if not found
 
-                        if (scan1DoneAttendance1) {
-                            totalDays++
+                        val ref = userRef.child("datatabel").child(month)
+                        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                var totalDays = 0
+                                var totalLateness: Long = 0
 
-                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                            val scanTimeDate = sdf.parse(scanTime1)
+                                for (day in snapshot.children) {
+                                    val attendanceData = day.child("attendance").value as? Map<*, *>
+                                    if (attendanceData != null) {
+                                        val attendance1 = attendanceData["attendance1"] as? Map<*, *>
+                                        val scan1DoneAttendance1 = attendance1?.get("scan1_done") as? Boolean ?: false
+                                        val scanTime1 = attendance1?.get("scanTime") as? String ?: ""
 
-                            // Define shift start times
-                            val shift1StartTime = sdf.parse("${scanTime1.substring(0, 10)} 07:00:00")
-                            val shift2StartTime = sdf.parse("${scanTime1.substring(0, 10)} 15:00:00")
+                                        if (scan1DoneAttendance1) {
+                                            totalDays++
+                                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                                            val scanTimeDate = sdf.parse(scanTime1)
 
-                            // Check lateness for active shift
-                            when {
-                                scanTimeDate.after(shift1StartTime) && scanTimeDate.before(shift2StartTime) -> {
-                                    // Morning shift (07:00)
-                                    val lateness = (scanTimeDate.time - shift1StartTime.time) / 60000 // In minutes
-                                    totalLateness += lateness
+                                            val shift1StartTime = sdf.parse("${scanTime1.substring(0, 10)} 07:00:00")
+                                            val shift2StartTime = sdf.parse("${scanTime1.substring(0, 10)} 15:00:00")
+
+                                            when {
+                                                scanTimeDate.after(shift1StartTime) && scanTimeDate.before(shift2StartTime) -> {
+                                                    val lateness = (scanTimeDate.time - shift1StartTime.time) / 60000 // In minutes
+                                                    totalLateness += lateness
+                                                }
+                                                scanTimeDate.after(shift2StartTime) -> {
+                                                    val lateness = (scanTimeDate.time - shift2StartTime.time) / 60000 // In minutes
+                                                    totalLateness += lateness
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
 
-                                scanTimeDate.after(shift2StartTime) -> {
-                                    // Afternoon shift (15:00)
-                                    val lateness = (scanTimeDate.time - shift2StartTime.time) / 60000 // In minutes
-                                    totalLateness += lateness
-                                }
+                                val salary = totalDays * dailySalary
+                                val latenessFine: Long = (totalLateness / 30) * 7000L
+                                val pph21: Long = (salary * 0.05).toLong()
+                                val bpjsKesehatan: Long = (salary * 0.03).toLong()
+                                val netIncome: Long = salary - pph21 - bpjsKesehatan - latenessFine
+
+                                callback(SalaryData(salary, pph21, bpjsKesehatan, netIncome, latenessFine))
+
+                                val salaryData = mapOf(
+                                    "salary" to salary,
+                                    "totalLateness" to totalLateness,
+                                    "pph21" to pph21,
+                                    "bpjsKesehatan" to bpjsKesehatan,
+                                    "netIncome" to netIncome
+                                )
+
+                                database.child("users").child(userId).child("salary")
+                                    .child(month)
+                                    .setValue(salaryData)
+                                    .addOnSuccessListener {
+                                        Log.d("Firebase", "Salary data updated successfully for month: $month")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("Firebase", "Error updating salary data: ${e.message}", e)
+                                    }
                             }
-                        }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(this@dashboard, "Failed to load attendance data.", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     }
-                }
 
-                // Determine salary based on bagian
-                // Tentukan gaji berdasarkan bagian
-                var salary: Long = 0
-                Log.d("SalaryCalculation", "Bagian: $bagian")  // Debugging bagian
-// Periksa bagian yang valid terlebih dahulu
-                when (bagian) {
-                    "HR" -> salary = totalDays * 200000L // Gaji untuk HR
-                    "Supervisor" -> salary = totalDays * 110000L // Gaji untuk Supervisor
-                    "Admin" -> salary = totalDays * 130000L // Gaji untuk Admin
-                }
-
-// Jika bagian tidak ditemukan, gunakan gaji default (misalnya bagian lain)
-                if (salary == 0L) {
-                    salary = totalDays * 100000L // Gaji default untuk bagian lain
-                }
-
-
-                // Calculate lateness fine
-                val latenessFine: Long = (totalLateness / 30) * 7000L
-
-                // Calculate tax and BPJS
-                val pph21: Long = (salary * 0.05).toLong()
-                val bpjsKesehatan: Long = (salary * 0.03).toLong()
-                val netIncome: Long = salary - pph21 - bpjsKesehatan - latenessFine
-
-                // Callback to update the UI
-                callback(SalaryData(salary, pph21, bpjsKesehatan, netIncome, latenessFine))
-
-                // Update Firebase to save salary data
-                val salaryData = mapOf(
-                    "salary" to salary,
-                    "totalLateness" to totalLateness,
-                    "pph21" to pph21,
-                    "bpjsKesehatan" to bpjsKesehatan,
-                    "netIncome" to netIncome
-                )
-
-                database.child("users").child(userId).child("salary")
-                    .child(month)
-                    .setValue(salaryData)
-                    .addOnSuccessListener {
-                        Log.d("Firebase", "Salary data updated successfully for month: $month")
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@dashboard, "Failed to load salary data.", Toast.LENGTH_SHORT).show()
                     }
-                    .addOnFailureListener { e ->
-                        Log.e("Firebase", "Error updating salary data: ${e.message}", e)
-                    }
+                })
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@dashboard, "Failed to load data.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@dashboard, "Failed to load user data.", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -402,12 +396,17 @@ class dashboard : AppCompatActivity() {
 
             val database = FirebaseDatabase.getInstance("https://penggajian-b318f-default-rtdb.asia-southeast1.firebasedatabase.app/")
             val userRef = database.getReference("users")
+            val gajiBagianRef = database.getReference("gajiBagian")
 
             // Check if username is already taken
             userRef.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        Toast.makeText(this@dashboard, "Username sudah digunakan", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@dashboard,
+                            "Username sudah digunakan",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
                         // Register new user
                         val newUser = userRef.push()
@@ -417,11 +416,47 @@ class dashboard : AppCompatActivity() {
                             "role" to "user", // Automatically assigning role here
                             "bagian" to bagian // Add the selected bagian to the database
                         )
-                        newUser.setValue(user).addOnCompleteListener {
-                            Toast.makeText(this@dashboard, "Registrasi berhasil", Toast.LENGTH_SHORT).show()
-                            dialog.dismiss() // Close the dialog
-                        }.addOnFailureListener {
-                            Toast.makeText(this@dashboard, "Registrasi gagal", Toast.LENGTH_SHORT).show()
+                        newUser.setValue(user).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val gajiEntry = gajiBagianRef.child(username)
+                                val salary = when (bagian) {
+                                    "HR" -> 200000L
+                                    "Supervisor" -> 110000L
+                                    "Operator Jahit" -> 100000L
+                                    "Quality Control" -> 100000L
+                                    "Packing" -> 100000L
+                                    "Admin" -> 100000L
+                                    "Sales Garment" -> 100000L
+                                    else -> 100000L // Default jika bagian tidak dikenal
+                                }
+                                val gajiData = mapOf(
+                                    "username" to username,
+                                    "bagian" to bagian,
+                                    "salary" to salary
+                                )
+                                gajiEntry.setValue(gajiData).addOnCompleteListener { gajiTask ->
+                                    if (gajiTask.isSuccessful) {
+                                        Toast.makeText(
+                                            this@dashboard,
+                                            "Berhasil Menambahkan Data",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        finish()
+                                    } else {
+                                        Toast.makeText(
+                                            this@dashboard,
+                                            "Gagal Menambahkan Data",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(
+                                    this@dashboard,
+                                    "Gagal Menambahkan Data",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }

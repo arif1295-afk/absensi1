@@ -122,7 +122,7 @@ class loginpage1 : AppCompatActivity() {
 
 // Set icon awal pada eyebutton
         eyebutton.setCompoundDrawablesWithIntrinsicBounds(
-            0, 0, R.drawable.baseline_face_retouching_off_24, 0 // Icon untuk mode password hidden
+            0, 0, R.drawable.baseline_face_24, 0 // Icon untuk mode password hidden
         )
 
 // Handle toggle password visibility
@@ -131,13 +131,13 @@ class loginpage1 : AppCompatActivity() {
                 // Sembunyikan password
                 etrpw1.transformationMethod = PasswordTransformationMethod.getInstance()
                 eyebutton.setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.baseline_face_retouching_off_24, 0
+                    0, 0, R.drawable.baseline_face_24, 0
                 )
             } else {
                 // Tampilkan password
                 etrpw1.transformationMethod = null
                 eyebutton.setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.baseline_face_24, 0
+                    0, 0, R.drawable.baseline_face_retouching_off_24, 0
                 )
             }
             isPasswordVisible = !isPasswordVisible
